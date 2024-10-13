@@ -64,7 +64,7 @@ public class AppController extends BaseController<App, AppVO, AppService> {
         }
 
         // 更新审核状态
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userService.getLoginUser();
         oldApp.setReviewStatus(appReviewVO.getReviewStatus());
         oldApp.setReviewerId(loginUser.getUserId());
         oldApp.setReviewTime(new Date());
