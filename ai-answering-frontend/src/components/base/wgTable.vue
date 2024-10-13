@@ -63,11 +63,34 @@
     >
       <slot :dataRecord="record" :name="field.slotName"></slot>
     </template>
+
+    <template
+      v-if="tableProps.actions && tableProps.actions.length > 0"
+      #actions="{ record }"
+    >
+      <a-space>
+        <a-button
+          v-for="(action, index) in tableProps.actions"
+          :key="index"
+          status="danger"
+          @click="handleTableAction(action.code, record)"
+          >{{ action.name }}
+        </a-button>
+      </a-space>
+    </template>
   </a-table>
 </template>
 
 <script lang="ts" setup>
-import { computed, defineProps, onMounted, reactive, ref } from "vue";
+import {
+  computed,
+  defineEmits,
+  defineExpose,
+  defineProps,
+  onMounted,
+  reactive,
+  ref,
+} from "vue";
 import request from "@/request";
 import API from "@/api";
 import WgSelect from "@/components/base/wgSelect.vue";
@@ -86,10 +109,16 @@ const tableProps = defineProps([
   "columns",
   "originExtraParams",
   "apiController",
+  "actions",
 ]);
 const searchConditionData = ref([]);
 const testnum = ref(null);
 let searchConditionList = reactive([]);
+
+const emit = defineEmits<{
+  (e: string, value: any): void;
+}>();
+
 const onPageChange = (pageIndex: number) => {
   baseParams.value.pageIndex = pageIndex;
   loadTable();
@@ -178,6 +207,14 @@ const diyColumns = computed(() => {
 });
 
 onMounted(() => {
+  if (tableProps?.actions?.length > 0) {
+    // eslint-disable-next-line vue/no-mutating-props
+    tableProps.columns.push({
+      title: "操作",
+      dataIndex: "actions",
+      slotName: "actions",
+    });
+  }
   searchConditionList = tableProps.columns
     .filter((item: any) => item.filter)
     .map((mitem: any) => {
@@ -185,13 +222,6 @@ onMounted(() => {
         ...mitem.searchCondition,
         title: mitem.title,
       };
-      // if (obj.dataType === "number") {
-      //   if (obj.value || obj.value == 0) {
-      //     obj.value = parseInt(obj.value);
-      //   } else {
-      //     obj.value = "";
-      //   }
-      // }
       if (Array.isArray(mitem.searchCondition.dataSource)) {
         obj.selectOptionName = null;
         obj.options = mitem.searchCondition.dataSource;
@@ -211,4 +241,37 @@ onMounted(() => {
   searchConditionData.value = searchConditionList;
   loadTable();
 });
+
+const handleTableAction = function (code: string, row: any) {
+  if (code === "delete") {
+    console.log("删除", row);
+    deleteRow({ id: row.id }).then(() => {
+      loadTable();
+    });
+  } else if (code === "edit") {
+    console.log("编辑", row);
+  } else {
+    emit(`${code}Handle`, row);
+  }
+};
+
+const deleteRow = async function (
+  params: any,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponsePageUserAnswer_>(
+    `/api/${tableProps.apiController}/deleteData`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      params: {
+        ...params,
+      },
+      ...(options || {}),
+    }
+  );
+};
+defineExpose({ loadTable });
 </script>

@@ -1,155 +1,23 @@
 <template>
-  <a-form
-    :model="formSearchParams"
-    :style="{ marginBottom: '20px' }"
-    layout="inline"
-    @submit="doSearch"
-  >
-    <a-form-item field="resultName" label="结果名称">
-      <a-input
-        v-model="formSearchParams.resultName"
-        allow-clear
-        placeholder="请输入结果名称"
-      />
-    </a-form-item>
-    <a-form-item field="resultDesc" label="结果描述">
-      <a-input
-        v-model="formSearchParams.resultDesc"
-        allow-clear
-        placeholder="请输入结果描述"
-      />
-    </a-form-item>
-    <a-form-item field="appId" label="应用 id">
-      <a-input
-        v-model="formSearchParams.appId"
-        allow-clear
-        placeholder="请输入应用 id"
-      />
-    </a-form-item>
-    <a-form-item field="userId" label="用户 id">
-      <a-input
-        v-model="formSearchParams.userId"
-        allow-clear
-        placeholder="请输入用户 id"
-      />
-    </a-form-item>
-    <a-form-item>
-      <a-button html-type="submit" style="width: 100px" type="primary">
-        搜索
-      </a-button>
-    </a-form-item>
-  </a-form>
-  <a-table
-    :columns="columns"
-    :data="dataList"
-    :pagination="{
-      showTotal: true,
-      pageSize: searchParams.pageSize,
-      current: searchParams.current,
-      total,
-    }"
-    @page-change="onPageChange"
-  >
-    <template #resultPicture="{ record }">
-      <a-image :src="record.resultPicture" width="64" />
+  <wg-table ref="table" v-bind="tableProps">
+    <template #resultPicture="{ dataRecord }">
+      <a-image :src="dataRecord.resultPicture" width="64" />
     </template>
-    <template #createTime="{ record }">
-      {{ dayjs(record.createTime).format("YYYY-MM-DD HH:mm:ss") }}
+    <template #createTime="{ dataRecord }">
+      {{ dayjs(dataRecord.createTime).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
-    <template #updateTime="{ record }">
-      {{ dayjs(record.updateTime).format("YYYY-MM-DD HH:mm:ss") }}
+    <template #updateTime="{ dataRecord }">
+      {{ dayjs(dataRecord.updateTime).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
-    <template #optional="{ record }">
-      <a-space>
-        <a-button status="danger" @click="doDelete(record)">删除</a-button>
-      </a-space>
-    </template>
-  </a-table>
+  </wg-table>
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect } from "vue";
-import {
-  deleteScoringResultUsingPost,
-  listScoringResultByPageUsingPost,
-} from "@/api/scoringResultController";
+import { ref } from "vue";
 import API from "@/api";
 import message from "@arco-design/web-vue/es/message";
 import { dayjs } from "@arco-design/web-vue/es/_utils/date";
-
-const formSearchParams = ref<API.ScoringResultQueryRequest>({});
-
-// 初始化搜索条件（不应该被修改）
-const initSearchParams = {
-  current: 1,
-  pageSize: 10,
-};
-
-const searchParams = ref<API.ScoringResultQueryRequest>({
-  ...initSearchParams,
-});
-const dataList = ref<API.ScoringResult[]>([]);
-const total = ref<number>(0);
-
-/**
- * 加载数据
- */
-const loadData = async () => {
-  const res = await listScoringResultByPageUsingPost(searchParams.value);
-  if (res.data.code === 0) {
-    dataList.value = res.data.data?.records || [];
-    total.value = res.data.data?.total || 0;
-  } else {
-    message.error("获取数据失败，" + res.data.message);
-  }
-};
-
-/**
- * 执行搜索
- */
-const doSearch = () => {
-  searchParams.value = {
-    ...initSearchParams,
-    ...formSearchParams.value,
-  };
-};
-
-/**
- * 当分页变化时，改变搜索条件，触发数据加载
- * @param page
- */
-const onPageChange = (page: number) => {
-  searchParams.value = {
-    ...searchParams.value,
-    current: page,
-  };
-};
-
-/**
- * 删除
- * @param record
- */
-const doDelete = async (record: API.ScoringResult) => {
-  if (!record.id) {
-    return;
-  }
-
-  const res = await deleteScoringResultUsingPost({
-    id: record.id,
-  });
-  if (res.data.code === 0) {
-    loadData();
-  } else {
-    message.error("删除失败，" + res.data.message);
-  }
-};
-
-/**
- * 监听 searchParams 变量，改变时触发数据的重新加载
- */
-watchEffect(() => {
-  loadData();
-});
+import WgTable from "@/components/base/wgTable.vue";
 
 // 表格列配置
 const columns = [
@@ -160,10 +28,22 @@ const columns = [
   {
     title: "名称",
     dataIndex: "resultName",
+    filter: true,
+    searchCondition: {
+      name: "result_name",
+      type: 0,
+      dataType: "string",
+    },
   },
   {
     title: "描述",
     dataIndex: "resultDesc",
+    filter: true,
+    searchCondition: {
+      name: "result_desc",
+      type: 0,
+      dataType: "string",
+    },
   },
   {
     title: "图片",
@@ -181,10 +61,22 @@ const columns = [
   {
     title: "应用 id",
     dataIndex: "appId",
+    filter: true,
+    searchCondition: {
+      name: "appId",
+      type: 1,
+      dataType: "string",
+    },
   },
   {
     title: "用户 id",
-    dataIndex: "userId",
+    dataIndex: "createUserId",
+    filter: true,
+    searchCondition: {
+      name: "createUserId",
+      type: 0,
+      dataType: "string",
+    },
   },
   {
     title: "创建时间",
@@ -196,9 +88,12 @@ const columns = [
     dataIndex: "updateTime",
     slotName: "updateTime",
   },
-  {
-    title: "操作",
-    slotName: "optional",
-  },
 ];
+
+const tableProps = ref({
+  columns,
+  originExtraParams: {},
+  apiController: "scoringResult",
+  actions: [{ code: "delete", name: "删除" }],
+});
 </script>

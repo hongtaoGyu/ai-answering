@@ -1,170 +1,48 @@
 <template>
-  <a-form
-    :model="formSearchParams"
-    :style="{ marginBottom: '20px' }"
-    layout="inline"
-    @submit="doSearch"
+  <wg-table
+    v-bind="tableProps"
+    @passHandle="doAppReview($event, '1', '审核通过')"
+    @noPassHandle="doAppReview($event, '2', '审核不通过')"
+    ref="table"
   >
-    <a-form-item field="appName" label="应用名称">
-      <a-input
-        v-model="formSearchParams.appName"
-        allow-clear
-        placeholder="请输入应用名称"
-      />
-    </a-form-item>
-    <a-form-item field="appDesc" label="应用描述">
-      <a-input
-        v-model="formSearchParams.appDesc"
-        allow-clear
-        placeholder="请输入应用描述"
-      />
-    </a-form-item>
-    <a-form-item>
-      <a-button html-type="submit" style="width: 100px" type="primary">
-        搜索
-      </a-button>
-    </a-form-item>
-  </a-form>
-  <a-table
-    :columns="columns"
-    :data="dataList"
-    :pagination="{
-      showTotal: true,
-      pageSize: searchParams.pageSize,
-      current: searchParams.current,
-      total,
-    }"
-    @page-change="onPageChange"
-  >
-    <template #appIcon="{ record }">
-      <a-image :src="record.appIcon" width="64" />
+    <template #appIcon="{ dataRecord }">
+      <a-image :src="dataRecord.appIcon" width="64" />
     </template>
-    <template #appType="{ record }">
-      {{ APP_TYPE_MAP[record.appType] }}
+    <template #appType="{ dataRecord }">
+      {{ APP_TYPE_MAP[dataRecord.appType] }}
     </template>
-    <template #scoringStrategy="{ record }">
-      {{ APP_SCORING_STRATEGY_MAP[record.scoringStrategy] }}
+    <template #scoringStrategy="{ dataRecord }">
+      {{ APP_SCORING_STRATEGY_MAP[dataRecord.scoringStrategy] }}
     </template>
-    <template #reviewStatus="{ record }">
-      {{ REVIEW_STATUS_MAP[record.reviewStatus] }}
+    <template #reviewStatus="{ dataRecord }">
+      {{ REVIEW_STATUS_MAP[dataRecord.reviewStatus] }}
     </template>
-    <template #reviewTime="{ record }">
+    <template #reviewTime="{ dataRecord }">
       {{
-        record.reviewTime &&
-        dayjs(record.reviewTime).format("YYYY-MM-DD HH:mm:ss")
+        dataRecord.reviewTime &&
+        dayjs(dataRecord.reviewTime).format("YYYY-MM-DD HH:mm:ss")
       }}
     </template>
-    <template #createTime="{ record }">
-      {{ dayjs(record.createTime).format("YYYY-MM-DD HH:mm:ss") }}
+    <template #createTime="{ dataRecord }">
+      {{ dayjs(dataRecord.createTime).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
-    <template #updateTime="{ record }">
-      {{ dayjs(record.updateTime).format("YYYY-MM-DD HH:mm:ss") }}
+    <template #updateTime="{ dataRecord }">
+      {{ dayjs(dataRecord.updateTime).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
-    <template #optional="{ record }">
-      <a-space>
-        <a-button
-          v-if="record.reviewStatus !== REVIEW_STATUS_ENUM.PASS"
-          status="success"
-          @click="doReview(record, REVIEW_STATUS_ENUM.PASS, '')"
-        >
-          通过
-        </a-button>
-        <a-button
-          v-if="record.reviewStatus !== REVIEW_STATUS_ENUM.REJECT"
-          status="warning"
-          @click="doReview(record, REVIEW_STATUS_ENUM.REJECT, '不符合上架要求')"
-        >
-          拒绝
-        </a-button>
-        <a-button status="danger" @click="doDelete(record)">删除</a-button>
-      </a-space>
-    </template>
-  </a-table>
+  </wg-table>
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect } from "vue";
-import {
-  deleteAppUsingPost,
-  doAppReviewUsingPost,
-  listAppByPageUsingPost,
-} from "@/api/appController";
-import API from "@/api";
+import { ref } from "vue";
 import message from "@arco-design/web-vue/es/message";
 import { dayjs } from "@arco-design/web-vue/es/_utils/date";
 import {
   APP_SCORING_STRATEGY_MAP,
   APP_TYPE_MAP,
-  REVIEW_STATUS_ENUM,
   REVIEW_STATUS_MAP,
 } from "@/constant/app";
-
-const formSearchParams = ref<API.AppQueryRequest>({});
-
-// 初始化搜索条件（不应该被修改）
-const initSearchParams = {
-  current: 1,
-  pageSize: 10,
-};
-
-const searchParams = ref<API.AppQueryRequest>({
-  ...initSearchParams,
-});
-const dataList = ref<API.App[]>([]);
-const total = ref<number>(0);
-
-/**
- * 加载数据
- */
-const loadData = async () => {
-  const res = await listAppByPageUsingPost(searchParams.value);
-  if (res.data.code === 0) {
-    dataList.value = res.data.data?.records || [];
-    total.value = res.data.data?.total || 0;
-  } else {
-    message.error("获取数据失败，" + res.data.message);
-  }
-};
-
-/**
- * 执行搜索
- */
-const doSearch = () => {
-  searchParams.value = {
-    ...initSearchParams,
-    ...formSearchParams.value,
-  };
-};
-
-/**
- * 当分页变化时，改变搜索条件，触发数据加载
- * @param page
- */
-const onPageChange = (page: number) => {
-  searchParams.value = {
-    ...searchParams.value,
-    current: page,
-  };
-};
-
-/**
- * 删除
- * @param record
- */
-const doDelete = async (record: API.App) => {
-  if (!record.id) {
-    return;
-  }
-
-  const res = await deleteAppUsingPost({
-    id: record.id,
-  });
-  if (res.data.code === 0) {
-    loadData();
-  } else {
-    message.error("删除失败，" + res.data.message);
-  }
-};
+import WgTable from "@/components/base/wgTable.vue";
+import { appReview } from "@/api/appController";
 
 /**
  * 审核
@@ -172,8 +50,14 @@ const doDelete = async (record: API.App) => {
  * @param reviewStatus
  * @param reviewMessage
  */
+const doAppReview = function (record, reviewStatus, reviewMessage) {
+  doReview(record, reviewStatus, reviewMessage);
+};
+
+const table = ref();
+
 const doReview = async (
-  record: API.App,
+  record: any,
   reviewStatus: number,
   reviewMessage?: string
 ) => {
@@ -181,24 +65,17 @@ const doReview = async (
     return;
   }
 
-  const res = await doAppReviewUsingPost({
-    id: record.id,
+  const res = await appReview({
+    appId: record.id,
     reviewStatus,
     reviewMessage,
   });
   if (res.data.code === 0) {
-    loadData();
+    table.value.loadTable();
   } else {
     message.error("审核失败，" + res.data.message);
   }
 };
-
-/**
- * 监听 searchParams 变量，改变时触发数据的重新加载
- */
-watchEffect(() => {
-  loadData();
-});
 
 // 表格列配置
 const columns = [
@@ -209,10 +86,22 @@ const columns = [
   {
     title: "名称",
     dataIndex: "appName",
+    filter: true,
+    searchCondition: {
+      name: "app_name",
+      type: 0,
+      dataType: "string",
+    },
   },
   {
     title: "描述",
     dataIndex: "appDesc",
+    filter: true,
+    searchCondition: {
+      name: "app_desc",
+      type: 0,
+      dataType: "string",
+    },
   },
   {
     title: "图标",
@@ -249,7 +138,7 @@ const columns = [
   },
   {
     title: "用户 id",
-    dataIndex: "userId",
+    dataIndex: "createUserId",
   },
   {
     title: "创建时间",
@@ -261,9 +150,16 @@ const columns = [
     dataIndex: "updateTime",
     slotName: "updateTime",
   },
-  {
-    title: "操作",
-    slotName: "optional",
-  },
 ];
+
+const tableProps = ref({
+  columns,
+  originExtraParams: {},
+  apiController: "app",
+  actions: [
+    { code: "pass", name: "通过" },
+    { code: "noPass", name: "拒绝" },
+    { code: "delete", name: "删除" },
+  ],
+});
 </script>

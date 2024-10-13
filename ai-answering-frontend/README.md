@@ -1,4 +1,4 @@
-# yudada-frontend
+# ai-answering-frontend
 
 ## Project setup
 ```

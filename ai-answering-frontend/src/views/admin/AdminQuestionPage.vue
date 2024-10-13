@@ -1,82 +1,40 @@
 <template>
-  <a-form
-    :model="formSearchParams"
-    :style="{ marginBottom: '20px' }"
-    layout="inline"
-    @submit="doSearch"
-  >
-    <a-form-item field="appId" label="应用 id">
-      <a-input
-        v-model="formSearchParams.appId"
-        allow-clear
-        placeholder="请输入应用 id"
-      />
-    </a-form-item>
-    <a-form-item field="userId" label="用户 id">
-      <a-input
-        v-model="formSearchParams.userId"
-        allow-clear
-        placeholder="请输入用户 id"
-      />
-    </a-form-item>
-    <a-form-item>
-      <a-button html-type="submit" style="width: 100px" type="primary">
-        搜索
-      </a-button>
-    </a-form-item>
-  </a-form>
-  <a-table
-    :columns="columns"
-    :data="dataList"
-    :pagination="{
-      showTotal: true,
-      pageSize: searchParams.pageSize,
-      current: searchParams.current,
-      total,
-    }"
-    @page-change="onPageChange"
-  >
-    <template #questionContent="{ record }">
+  <wg-table v-bind="tableProps">
+    <template #questionContent="{ dataRecord }">
       <div
-        v-for="question in JSON.parse(record.questionContent)"
+        v-for="question in JSON.parse(dataRecord.questionContent)"
         :key="question.title"
       >
         {{ question }}
       </div>
     </template>
-    <template #createTime="{ record }">
-      {{ dayjs(record.createTime).format("YYYY-MM-DD HH:mm:ss") }}
+    <template #createTime="{ dataRecord }">
+      {{ dayjs(dataRecord.createTime).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
-    <template #updateTime="{ record }">
-      {{ dayjs(record.updateTime).format("YYYY-MM-DD HH:mm:ss") }}
+    <template #updateTime="{ dataRecord }">
+      {{ dayjs(dataRecord.updateTime).format("YYYY-MM-DD HH:mm:ss") }}
     </template>
-    <template #optional="{ record }">
-      <a-space>
-        <a-button status="danger" @click="doDelete(record)">删除</a-button>
-      </a-space>
-    </template>
-  </a-table>
+  </wg-table>
 </template>
 
 <script lang="ts" setup>
 import { ref, watchEffect } from "vue";
 import {
-  deleteQuestionUsingPost,
-  listQuestionByPageUsingPost,
+  questionDeleteData,
+  questionGetDataList,
 } from "@/api/questionController";
 import API from "@/api";
 import message from "@arco-design/web-vue/es/message";
 import { dayjs } from "@arco-design/web-vue/es/_utils/date";
-
-const formSearchParams = ref<API.QuestionQueryRequest>({});
+import WgTable from "@/components/base/wgTable.vue";
 
 // 初始化搜索条件（不应该被修改）
 const initSearchParams = {
-  current: 1,
+  pageIndex: 1,
   pageSize: 10,
 };
 
-const searchParams = ref<API.QuestionQueryRequest>({
+const searchParams = ref<API.GetDataListRequest>({
   ...initSearchParams,
 });
 const dataList = ref<API.Question[]>([]);
@@ -86,34 +44,13 @@ const total = ref<number>(0);
  * 加载数据
  */
 const loadData = async () => {
-  const res = await listQuestionByPageUsingPost(searchParams.value);
+  const res = await questionGetDataList(searchParams.value);
   if (res.data.code === 0) {
     dataList.value = res.data.data?.records || [];
     total.value = res.data.data?.total || 0;
   } else {
     message.error("获取数据失败，" + res.data.message);
   }
-};
-
-/**
- * 执行搜索
- */
-const doSearch = () => {
-  searchParams.value = {
-    ...initSearchParams,
-    ...formSearchParams.value,
-  };
-};
-
-/**
- * 当分页变化时，改变搜索条件，触发数据加载
- * @param page
- */
-const onPageChange = (page: number) => {
-  searchParams.value = {
-    ...searchParams.value,
-    current: page,
-  };
 };
 
 /**
@@ -125,7 +62,7 @@ const doDelete = async (record: API.Question) => {
     return;
   }
 
-  const res = await deleteQuestionUsingPost({
+  const res = await questionDeleteData({
     id: record.id,
   });
   if (res.data.code === 0) {
@@ -156,10 +93,22 @@ const columns = [
   {
     title: "应用 id",
     dataIndex: "appId",
+    filter: true,
+    searchCondition: {
+      name: "appId",
+      type: 1,
+      dataType: "string",
+    },
   },
   {
     title: "用户 id",
-    dataIndex: "userId",
+    dataIndex: "createUserId",
+    filter: true,
+    searchCondition: {
+      name: "createUserId",
+      type: 1,
+      dataType: "string",
+    },
   },
   {
     title: "创建时间",
@@ -171,9 +120,12 @@ const columns = [
     dataIndex: "updateTime",
     slotName: "updateTime",
   },
-  {
-    title: "操作",
-    slotName: "optional",
-  },
 ];
+
+const tableProps = ref({
+  columns,
+  originExtraParams: {},
+  apiController: "question",
+  actions: [{ code: "delete", name: "删除" }],
+});
 </script>
