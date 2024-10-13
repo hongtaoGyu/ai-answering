@@ -4,15 +4,14 @@
     :options="selectOptions"
     @change="handleChange"
   >
-    <template #option="{ option }" v-if="showLabel">
+    <template v-if="showLabel" #option="{ option }">
       <span>{{ option.label }}</span>
     </template>
   </a-select>
 </template>
 
 <script lang="ts" setup>
-import { defineProps, onMounted, ref, onBeforeMount, defineEmits } from "vue";
-import API from "@/api";
+import { defineEmits, defineProps, onBeforeMount, onMounted, ref } from "vue";
 import $wg from "@/whiteGoose";
 import { selectOptionGetSelectOptionDataByName } from "@/api/selectOptionController";
 

@@ -1,31 +1,31 @@
 <template>
   <a-form
+    ref="formRef"
     :model="searchConditionList"
     :style="{ marginBottom: '20px' }"
     layout="inline"
-    ref="formRef"
     @submit="doSearch"
   >
     <a-form-item
       v-for="(item, index) in searchConditionList"
       :key="index"
-      field="value"
       :label="item.title"
+      field="value"
     >
       <a-input-number
         v-if="item.dataType === 'number'"
         v-model="item.value"
-        allow-clear
         :placeholder="`请输入${item.title}`"
+        allow-clear
       />
       <wg-select
         v-if="item.dataType === 'select'"
         v-model="item.value"
-        :selectOptionName="item.selectOptionName"
         :options="item.options"
-        allow-clear
-        :show-label="false"
         :placeholder="`请选择${item.title}`"
+        :selectOptionName="item.selectOptionName"
+        :show-label="false"
+        allow-clear
       ></wg-select>
       <a-input
         v-if="item.dataType === 'string'"
@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineProps, onMounted, reactive, ref, nextTick } from "vue";
+import { computed, defineProps, onMounted, reactive, ref } from "vue";
 import request from "@/request";
 import API from "@/api";
 import WgSelect from "@/components/base/wgSelect.vue";
