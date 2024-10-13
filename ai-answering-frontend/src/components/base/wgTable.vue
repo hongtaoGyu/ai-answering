@@ -1,0 +1,214 @@
+<template>
+  <a-form
+    :model="searchConditionList"
+    :style="{ marginBottom: '20px' }"
+    layout="inline"
+    ref="formRef"
+    @submit="doSearch"
+  >
+    <a-form-item
+      v-for="(item, index) in searchConditionList"
+      :key="index"
+      field="value"
+      :label="item.title"
+    >
+      <a-input-number
+        v-if="item.dataType === 'number'"
+        v-model="item.value"
+        allow-clear
+        :placeholder="`请输入${item.title}`"
+      />
+      <wg-select
+        v-if="item.dataType === 'select'"
+        v-model="item.value"
+        :selectOptionName="item.selectOptionName"
+        :options="item.options"
+        allow-clear
+        :show-label="false"
+        :placeholder="`请选择${item.title}`"
+      ></wg-select>
+      <a-input
+        v-if="item.dataType === 'string'"
+        v-model="item.value"
+        :placeholder="`请输入${item.title}`"
+        allow-clear
+      />
+    </a-form-item>
+    <!--    <a-form-item>-->
+    <!--      <a-button style="width: 100px" type="outline" @click="reset">-->
+    <!--        重置-->
+    <!--      </a-button>-->
+    <!--    </a-form-item>-->
+    <a-form-item>
+      <a-button html-type="submit" style="width: 100px" type="primary">
+        搜索
+      </a-button>
+    </a-form-item>
+  </a-form>
+  <a-table
+    :columns="tableProps.columns"
+    :data="dataList"
+    :pagination="{
+      showTotal: true,
+      pageSize: baseParams.pageSize,
+      current: baseParams.pageIndex,
+      total: totals,
+    }"
+    @page-change="onPageChange"
+  >
+    <template
+      v-for="(field, index) in diyColumns"
+      :key="index"
+      #[field.slotName]="{ record }"
+    >
+      <slot :dataRecord="record" :name="field.slotName"></slot>
+    </template>
+  </a-table>
+</template>
+
+<script lang="ts" setup>
+import { computed, defineProps, onMounted, reactive, ref, nextTick } from "vue";
+import request from "@/request";
+import API from "@/api";
+import WgSelect from "@/components/base/wgSelect.vue";
+import $wg from "@/whiteGoose";
+
+// 分页参数
+const baseParams = ref({ pageIndex: 1, pageSize: 10 });
+// 拓展搜索参数
+let queryParams = ref<any>({});
+const formRef = ref(null);
+
+//表格数据
+let dataList = ref<any>([]);
+let totals = ref<number>(0);
+const tableProps = defineProps([
+  "columns",
+  "originExtraParams",
+  "apiController",
+]);
+const searchConditionData = ref([]);
+const testnum = ref(null);
+let searchConditionList = reactive([]);
+const onPageChange = (pageIndex: number) => {
+  baseParams.value.pageIndex = pageIndex;
+  loadTable();
+};
+
+const loadTable = function () {
+  let allParams = { ...baseParams.value };
+  dataList.value = [];
+  const list = queryParams.value.searchConditionList.filter(
+    (item: any) => item.value || item.value === 0
+  );
+
+  if (list.length > 0) {
+    allParams = Object.assign(allParams, {
+      searchCondition: list.map((item: any) => ({
+        name: item.name,
+        value: item.value,
+        type: item.type,
+      })),
+    });
+  }
+  if (
+    tableProps.originExtraParams &&
+    Object.keys(tableProps.originExtraParams).length > 0
+  ) {
+    allParams = Object.assign(allParams, tableProps.originExtraParams);
+  }
+  getData(allParams)
+    .then((res: any) => {
+      res.data.data.records.forEach((item: any) => {
+        dataList.value.push(item);
+      });
+      dataList.value = res.data.data.records;
+      totals.value = Number(res.data.data.total);
+    })
+    .catch((err) => {
+      alert(`出错了！${err}`);
+    });
+};
+
+const getData = async function (
+  body: API.GetDataListRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponsePageUserAnswer_>(
+    `/api/${tableProps.apiController}/getDataList`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+      ...(options || {}),
+    }
+  );
+};
+
+const doSearch = () => {
+  baseParams.value.pageIndex = 1;
+  loadTable();
+  console.log("搜索");
+};
+
+const reset = () => {
+  if (queryParams.value.searchConditionList.length > 0) {
+    queryParams.value.searchConditionList.forEach((item: any) => {
+      item.value = null;
+    });
+  }
+  console.log("computed", searchConditionList);
+  if (searchConditionList.length > 0) {
+    searchConditionList.forEach((item: any) => {
+      item.value = null;
+    });
+  }
+  if (formRef.value) {
+    formRef.value.resetFields();
+  }
+
+  baseParams.value.pageIndex = 1;
+  loadTable();
+};
+
+const diyColumns = computed(() => {
+  return tableProps.columns.filter((item: any) => item.slotName);
+});
+
+onMounted(() => {
+  searchConditionList = tableProps.columns
+    .filter((item: any) => item.filter)
+    .map((mitem: any) => {
+      let obj = {
+        ...mitem.searchCondition,
+        title: mitem.title,
+      };
+      // if (obj.dataType === "number") {
+      //   if (obj.value || obj.value == 0) {
+      //     obj.value = parseInt(obj.value);
+      //   } else {
+      //     obj.value = "";
+      //   }
+      // }
+      if (Array.isArray(mitem.searchCondition.dataSource)) {
+        obj.selectOptionName = null;
+        obj.options = mitem.searchCondition.dataSource;
+      } else if ($wg.isNotWhiteSpace(mitem.searchCondition.dataSource)) {
+        obj.selectOptionName = mitem.searchCondition.dataSource;
+        obj.options = null;
+      } else {
+        obj.selectOptionName = null;
+        obj.options = null;
+      }
+
+      return obj;
+    });
+  queryParams.value = {
+    searchConditionList,
+  };
+  searchConditionData.value = searchConditionList;
+  loadTable();
+});
+</script>

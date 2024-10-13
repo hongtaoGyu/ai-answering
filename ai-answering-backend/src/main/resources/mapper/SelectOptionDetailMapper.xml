@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hongtao.base.baseFramwork.selectoption.dao.SelectOptionDetailMapper">
+
+    <resultMap id="BaseResultMap" type="com.hongtao.base.baseFramwork.selectoption.model.entity.SelectOptionDetail">
+            <result property="selectOptionDetailId" column="select_option_detailId" jdbcType="BIGINT"/>
+            <result property="createUserId" column="createUserId" jdbcType="BIGINT"/>
+            <result property="createUserName" column="createUserName" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateUserId" column="updateUserId" jdbcType="BIGINT"/>
+            <result property="updateUserName" column="updateUserName" jdbcType="VARCHAR"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="stateCode" column="stateCode" jdbcType="VARCHAR"/>
+            <result property="label" column="label" jdbcType="VARCHAR"/>
+            <result property="value" column="value" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        select_option_detailId,createUserId,createUserName,
+        createTime,updateUserId,updateUserName,
+        updateTime,stateCode,name,
+        value
+    </sql>
+</mapper>

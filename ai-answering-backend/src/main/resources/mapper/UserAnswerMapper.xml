@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hongtao.aianswering.answer.dao.UserAnswerMapper">
+
+    <resultMap id="BaseResultMap" type="com.hongtao.aianswering.answer.model.entity.UserAnswer">
+        <id property="userAnswerId" column="user_answerId" jdbcType="BIGINT"/>
+        <result property="appId" column="appId" jdbcType="BIGINT"/>
+        <result property="appType" column="app_type" jdbcType="TINYINT"/>
+        <result property="scoringStrategy" column="scoring_strategy" jdbcType="TINYINT"/>
+        <result property="choices" column="choices" jdbcType="VARCHAR"/>
+        <result property="resultId" column="resultId" jdbcType="BIGINT"/>
+        <result property="resultName" column="resultName" jdbcType="VARCHAR"/>
+        <result property="resultDesc" column="result_desc" jdbcType="VARCHAR"/>
+        <result property="resultPicture" column="result_picture" jdbcType="VARCHAR"/>
+        <result property="resultScore" column="result_score" jdbcType="INTEGER"/>
+        <result property="createUserId" column="createUserId" jdbcType="BIGINT"/>
+        <result property="createUserName" column="createUserName" jdbcType="VARCHAR"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateUserId" column="updateUserId" jdbcType="BIGINT"/>
+        <result property="updateUserName" column="updateUserName" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="stateCode" column="stateCode" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_answerId
+        ,appId,app_type,
+        scoring_strategy,choices,resultId,
+        resultName,result_desc,result_picture,
+        result_score,createUserId,createUserName,
+        createTime,updateUserId,updateUserName,
+        updateTime,stateCode
+    </sql>
+</mapper>

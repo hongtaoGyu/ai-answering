@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="generator.mapper.ScoringResultMapper">
+
+    <resultMap id="BaseResultMap" type="com.hongtao.aianswering.app.model.entity.ScoringResult">
+        <id property="scoringResultId" column="Scoring_resultId" jdbcType="BIGINT"/>
+        <result property="resultName" column="result_name" jdbcType="VARCHAR"/>
+        <result property="resultDesc" column="result_desc" jdbcType="VARCHAR"/>
+        <result property="resultPicture" column="result_picture" jdbcType="VARCHAR"/>
+        <result property="resultProp" column="result_prop" jdbcType="VARCHAR"/>
+        <result property="resultScoreRange" column="result_score_range" jdbcType="INTEGER"/>
+        <result property="appId" column="appId" jdbcType="BIGINT"/>
+        <result property="createUserId" column="createUserId" jdbcType="BIGINT"/>
+        <result property="createUserName" column="createUserName" jdbcType="VARCHAR"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateUserId" column="updateUserId" jdbcType="BIGINT"/>
+        <result property="updateUserName" column="updateUserName" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="stateCode" column="stateCode" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        Scoring_resultId
+        ,result_name,result_desc,
+        result_picture,result_prop,result_score_range,
+        appId,createUserId,createUserName,
+        createTime,updateUserId,updateUserName,
+        updateTime,stateCode
+    </sql>
+</mapper>
