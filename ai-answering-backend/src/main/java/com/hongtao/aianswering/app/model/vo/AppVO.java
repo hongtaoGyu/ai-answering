@@ -2,9 +2,11 @@ package com.hongtao.aianswering.app.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.hongtao.aianswering.app.model.entity.App;
 import com.hongtao.base.baseFramwork.core.BaseVO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.beans.BeanUtils;
 
 import java.util.Date;
 

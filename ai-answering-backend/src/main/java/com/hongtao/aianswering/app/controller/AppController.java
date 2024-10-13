@@ -2,8 +2,11 @@ package com.hongtao.aianswering.app.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hongtao.aianswering.app.model.dto.AppQueryRequest;
 import com.hongtao.aianswering.app.model.entity.App;
 import com.hongtao.aianswering.app.model.vo.AppReviewVO;
+import com.hongtao.aianswering.app.model.vo.AppUserVO;
 import com.hongtao.aianswering.app.model.vo.AppVO;
 import com.hongtao.aianswering.app.service.AppService;
 import com.hongtao.base.annotation.AuthCheck;
@@ -71,5 +74,28 @@ public class AppController extends BaseController<App, AppVO, AppService> {
         oldApp.setReviewMessage(appReviewVO.getReviewMessage());
         appService.updateData(oldApp);
         return ResultUtils.success(true);
+    }
+
+    /**
+     * 分页获取应用列表（封装类）
+     *
+     * @param appQueryRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/list/page/vo")
+    public BaseResponse<Page<AppUserVO>> listAppVOByPage(@RequestBody AppQueryRequest appQueryRequest,
+                                                         HttpServletRequest request) {
+        long current = appQueryRequest.getPageIndex();
+        long size = appQueryRequest.getPageSize();
+        // 限制爬虫
+        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        // 只能看到已过审的应用
+        appQueryRequest.setReviewStatus(1);
+        // 查询数据库
+        Page<App> appPage = appService.page(new Page<>(current, size),
+                appService.getQueryWrapper(appQueryRequest));
+        // 获取封装类
+        return ResultUtils.success(appService.getAppVOPage(appPage, request));
     }
 }

@@ -10,11 +10,13 @@ import com.hongtao.base.exception.ThrowUtils;
 import com.hongtao.base.utils.ReflectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
+@Transactional
 public abstract class BaseController<T extends BaseEntity, E extends BaseVO, U extends BaseService<T>> {
     @Autowired
     protected BaseService<T> baseService;
