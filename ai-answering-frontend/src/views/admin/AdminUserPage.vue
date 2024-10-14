@@ -31,7 +31,7 @@
     :pagination="{
       showTotal: true,
       pageSize: searchParams.pageSize,
-      current: searchParams.current,
+      pageIndex: searchParams.pageIndex,
       total,
     }"
     @page-change="onPageChange"
@@ -64,7 +64,7 @@ let formSearchParams = ref<API.UserQueryRequest>({});
 
 // 初始化搜索条件（不应该被修改）
 const initSearchParams = {
-  current: 1,
+  pageIndex: 1,
   pageSize: 10,
 };
 
@@ -104,7 +104,7 @@ const doSearch = () => {
 const onPageChange = (page: number) => {
   searchParams.value = {
     ...searchParams.value,
-    current: page,
+    pageIndex: page,
   };
 };
 
