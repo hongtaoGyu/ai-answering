@@ -7,6 +7,8 @@ import com.hongtao.base.utils.StringUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class QuestionVO extends BaseVO {
@@ -18,7 +20,7 @@ public class QuestionVO extends BaseVO {
     /**
      * 题目内容（前端接收）
      */
-    private QuestionContentDTO questionContentDTO;
+    private List<QuestionContentDTO> questionContentDTOList;
 
     /**
      * 题目内容（json格式）
@@ -32,15 +34,15 @@ public class QuestionVO extends BaseVO {
 
     public String getQuestionContent() {
         if (StringUtils.isEmpty(questionContent)) {
-            return JSONUtil.toJsonStr(questionContentDTO);
+            return JSONUtil.toJsonStr(questionContentDTOList);
         }
         return questionContent;
     }
 
-    public void setQuestionContentDTO(QuestionContentDTO questionContentDTO) {
-        this.questionContentDTO = questionContentDTO;
+    public void setQuestionContentDTOList(List<QuestionContentDTO> questionContentDTOList) {
+        this.questionContentDTOList = questionContentDTOList;
         if (StringUtils.isEmpty(questionContent)) {
-            this.questionContent = JSONUtil.toJsonStr(questionContentDTO);
+            this.questionContent = JSONUtil.toJsonStr(questionContentDTOList);
         }
     }
 }

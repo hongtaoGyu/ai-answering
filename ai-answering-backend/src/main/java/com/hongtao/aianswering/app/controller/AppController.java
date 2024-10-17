@@ -2,6 +2,8 @@ package com.hongtao.aianswering.app.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.toolkit.BeanUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hongtao.aianswering.app.model.dto.AppQueryRequest;
 import com.hongtao.aianswering.app.model.entity.App;
@@ -22,10 +24,8 @@ import com.hongtao.base.constant.CommonConstant;
 import com.hongtao.base.constant.UserConstant;
 import com.hongtao.base.exception.BusinessException;
 import com.hongtao.base.exception.ThrowUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.hongtao.base.utils.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -97,5 +97,20 @@ public class AppController extends BaseController<App, AppVO, AppService> {
                 appService.getQueryWrapper(appQueryRequest));
         // 获取封装类
         return ResultUtils.success(appService.getAppVOPage(appPage, request));
+    }
+
+    @GetMapping("/getAppUserVO")
+    public BaseResponse<AppUserVO> getAppUserVO(@RequestParam Long id) {
+        ThrowUtils.throwIf(id == null, ErrorCode.PARAMS_ERROR);
+        AppUserVO appUserVO = new AppUserVO();
+        App app = appService.getData(id);
+        ThrowUtils.throwIf(app == null, ErrorCode.NOT_FOUND_ERROR);
+        BeanUtil.copyProperties(app, appUserVO);
+        User user = userService.getById(app.getCreateUserId());
+        if (user != null) {
+            appUserVO.setUser(userService.getUserVO(user));
+        }
+
+        return ResultUtils.success(appUserVO);
     }
 }

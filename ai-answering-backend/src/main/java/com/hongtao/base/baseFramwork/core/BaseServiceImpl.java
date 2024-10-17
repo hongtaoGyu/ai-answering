@@ -138,6 +138,7 @@ public abstract class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseEnt
         t.setCreateTime(new Date());
         t.setCreateUserId(loginUser.getUserId());
         t.setCreateUserName(loginUser.getUserName());
+        t.setStateCode("0");
         String pluginName = com.hongtao.base.utils.StringUtils.toCamelCase(t.getTableName()) + "Plugin";
         DataPlugin<T> dataPlugin = SpringContextUtils.getBean(pluginName, DataPlugin.class);
         if (dataPlugin == null) {
