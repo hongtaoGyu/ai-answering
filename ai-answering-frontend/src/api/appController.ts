@@ -59,6 +59,21 @@ export async function appDeleteData(
   });
 }
 
+/** getAppUserVO GET /api/app/getAppUserVO */
+export async function appGetAppUserVo(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.appGetAppUserVOParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseAppUserVO_>('/api/app/getAppUserVO', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
 /** getData GET /api/app/getData */
 export async function appGetData(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)

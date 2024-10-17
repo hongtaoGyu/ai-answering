@@ -18,6 +18,7 @@ import { selectOptionGetSelectOptionDataByName } from "@/api/selectOptionControl
 const props = defineProps(["options", "selectOptionName", "showLabel"]);
 const selectOptions = ref(props.options);
 const showLabel = ref(true);
+const selectedValue = ref(props.options);
 const emit = defineEmits<{
   (e: "update:modelValue", value: any): void;
 }>();
@@ -26,18 +27,18 @@ const handleChange = (value: string | number) => {
   emit("update:modelValue", value);
 };
 
-onMounted(() => {
+onBeforeMount(() => {
   if (!props.options && $wg.isNotWhiteSpace(props.selectOptionName)) {
-    debugger;
+    selectOptions.value = [];
     selectOptionGetSelectOptionDataByName({
       name: props.selectOptionName.toString(),
     }).then((res) => {
       console.log("res.data", res.data);
       selectOptions.value = res.data.data;
+      console.log("1111", selectOptions.value);
     });
   }
-});
-onBeforeMount(() => {
+
   if (props.showLabel !== undefined && props.showLabel !== null) {
     showLabel.value = props.showLabel;
   }

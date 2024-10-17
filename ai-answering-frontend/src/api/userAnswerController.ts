@@ -92,6 +92,21 @@ export async function userAnswerGetDataList(
   });
 }
 
+/** getUserAnswerWithUser GET /api/userAnswer/getUserAnswerWithUser */
+export async function userAnswerGetUserAnswerWithUser(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.userAnswerGetUserAnswerWithUserParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseUserAnswerWithUserVO_>('/api/userAnswer/getUserAnswerWithUser', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
 /** saveOrUpdateData POST /api/userAnswer/saveOrUpdateData */
 export async function userAnswerSaveOrUpdateData(
   body: API.UserAnswerVO,

@@ -36,6 +36,11 @@ declare namespace API {
     id: number;
   };
 
+  type appGetAppUserVOParams = {
+    /** id */
+    id: number;
+  };
+
   type appGetDataParams = {
     /** id */
     id: number;
@@ -46,9 +51,9 @@ declare namespace API {
     appIcon?: string;
     appName?: string;
     appType?: number;
-    pageIndex?: number;
     id?: number;
     notId?: number;
+    pageIndex?: number;
     pageSize?: number;
     reviewMessage?: string;
     reviewStatus?: number;
@@ -114,6 +119,12 @@ declare namespace API {
     updateTime?: string;
     updateUserId?: number;
     updateUserName?: string;
+  };
+
+  type BaseResponseAppUserVO_ = {
+    code?: number;
+    data?: AppUserVO;
+    message?: string;
   };
 
   type BaseResponseAppVO_ = {
@@ -242,6 +253,12 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseUserAnswerWithUserVO_ = {
+    code?: number;
+    data?: UserAnswerWithUserVO;
+    message?: string;
+  };
+
   type BaseResponseUserVO_ = {
     code?: number;
     data?: UserVO;
@@ -285,7 +302,7 @@ declare namespace API {
 
   type PageApp_ = {
     countId?: string;
-    pageIndex?: number;
+    current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
@@ -298,7 +315,7 @@ declare namespace API {
 
   type PageAppUserVO_ = {
     countId?: string;
-    pageIndex?: number;
+    current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
@@ -311,7 +328,7 @@ declare namespace API {
 
   type PageQuestion_ = {
     countId?: string;
-    pageIndex?: number;
+    current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
@@ -324,7 +341,7 @@ declare namespace API {
 
   type PageScoringResult_ = {
     countId?: string;
-    pageIndex?: number;
+    current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
@@ -337,7 +354,7 @@ declare namespace API {
 
   type PageSelectOption_ = {
     countId?: string;
-    pageIndex?: number;
+    current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
@@ -350,7 +367,7 @@ declare namespace API {
 
   type PageSelectOptionDetail_ = {
     countId?: string;
-    pageIndex?: number;
+    current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
@@ -363,7 +380,7 @@ declare namespace API {
 
   type PageUser_ = {
     countId?: string;
-    pageIndex?: number;
+    current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
@@ -376,7 +393,7 @@ declare namespace API {
 
   type PageUserAnswer_ = {
     countId?: string;
-    pageIndex?: number;
+    current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
@@ -389,7 +406,7 @@ declare namespace API {
 
   type PageUserVO_ = {
     countId?: string;
-    pageIndex?: number;
+    current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
@@ -446,7 +463,7 @@ declare namespace API {
     createUserId?: number;
     createUserName?: string;
     questionContent?: string;
-    questionContentDTO?: QuestionContentDTO;
+    questionContentDTOList?: QuestionContentDTO[];
     questionId?: number;
     stateCode?: string;
     updateTime?: string;
@@ -464,6 +481,7 @@ declare namespace API {
     resultName?: string;
     resultPicture?: string;
     resultProp?: string;
+    resultPropList?: string[];
     resultScoreRange?: number;
     scoringResultId?: number;
     stateCode?: string;
@@ -690,6 +708,11 @@ declare namespace API {
     id: number;
   };
 
+  type userAnswerGetUserAnswerWithUserParams = {
+    /** id */
+    id: number;
+  };
+
   type UserAnswerVO = {
     appId?: number;
     appType?: number;
@@ -708,6 +731,28 @@ declare namespace API {
     updateTime?: string;
     updateUserId?: number;
     updateUserName?: string;
+    userAnswerId?: number;
+  };
+
+  type UserAnswerWithUserVO = {
+    appId?: number;
+    appType?: number;
+    choices?: string;
+    choicesList?: string[];
+    createTime?: string;
+    createUserId?: number;
+    createUserName?: string;
+    resultDesc?: string;
+    resultId?: number;
+    resultName?: string;
+    resultPicture?: string;
+    resultScore?: number;
+    scoringStrategy?: number;
+    stateCode?: string;
+    updateTime?: string;
+    updateUserId?: number;
+    updateUserName?: string;
+    user?: UserVO;
     userAnswerId?: number;
   };
 
@@ -732,8 +777,8 @@ declare namespace API {
   };
 
   type UserQueryRequest = {
-    pageIndex?: number;
     mpOpenId?: string;
+    pageIndex?: number;
     pageSize?: number;
     sortField?: string;
     sortOrder?: string;

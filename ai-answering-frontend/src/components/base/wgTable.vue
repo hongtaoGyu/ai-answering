@@ -140,23 +140,32 @@ const loadTable = function () {
       })),
     });
   }
-  if (
-    tableProps.originExtraParams &&
-    Object.keys(tableProps.originExtraParams).length > 0
-  ) {
-    allParams = Object.assign(allParams, tableProps.originExtraParams);
-  }
-  getData(allParams)
-    .then((res: any) => {
-      res.data.data.records.forEach((item: any) => {
-        dataList.value.push(item);
+  if (tableProps.originExtraParams && tableProps.originExtraParams.length > 0) {
+    if (list.length > 0) {
+      console.log("111");
+      allParams = Object.assign(allParams, {
+        searchCondition: [...list, ...tableProps.originExtraParams],
       });
-      dataList.value = res.data.data.records;
-      totals.value = Number(res.data.data.total);
-    })
-    .catch((err) => {
-      alert(`出错了！${err}`);
-    });
+    } else {
+      console.log("222");
+      allParams = Object.assign(allParams, {
+        searchCondition: tableProps.originExtraParams,
+      });
+    }
+  }
+  getData(allParams).then((res: any) => {
+    if (res?.data?.data) {
+      if (res.data.data.records) {
+        res.data.data.records.forEach((item: any) => {
+          dataList.value.push(item);
+        });
+      }
+      dataList.value = res.data?.data?.records || [];
+      totals.value = Number(res.data?.data?.total || 0);
+    }
+  });
+  // .catch((err) => {
+  // });
 };
 
 const getData = async function (
