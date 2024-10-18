@@ -73,6 +73,13 @@ public class UserAnswerVO extends BaseVO {
         return choices;
     }
 
+    public void setChoices(String choices) {
+        this.choices = choices;
+        if (choicesList == null || choicesList.isEmpty()) {
+            this.choicesList = JSONUtil.parse(choices).toBean(List.class);
+        }
+    }
+
     public void setChoicesList(List<String> choicesList) {
         this.choicesList = choicesList;
         if (StringUtils.isEmpty(choices)) {

@@ -115,3 +115,5 @@ knife4j:
         api-rule-resources:
           - com.hongtao.aianswering
           - com.hongtao.base
+ai:
+  apiKey: 自己的apiKey

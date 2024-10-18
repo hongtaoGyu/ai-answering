@@ -18,7 +18,7 @@ public class QuestionContentDTO {
     @AllArgsConstructor
     public static class Option {
         private String result;
-        private int score;
+        private Integer score;
         private String value;
         private String key;
     }
