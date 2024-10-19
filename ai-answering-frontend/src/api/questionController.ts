@@ -17,6 +17,21 @@ export async function questionActivatedData(
   });
 }
 
+/** aiGenerateQuestion POST /api/question/ai_generate */
+export async function questionAiGenerate(
+  body: API.AiGenerateQuestionRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseListQuestionContentDTO_>('/api/question/ai_generate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** createData POST /api/question/createData */
 export async function questionCreateData(body: API.QuestionVO, options?: { [key: string]: any }) {
   return request<API.BaseResponseQuestionVO_>('/api/question/createData', {

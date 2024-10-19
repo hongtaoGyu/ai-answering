@@ -52,7 +52,7 @@
 <script lang="ts" setup>
 import { defineProps, reactive, ref, withDefaults } from "vue";
 import API from "@/api";
-import { aiGenerateQuestionUsingPost } from "@/api/questionController";
+import { questionAiGenerate } from "@/api/questionController";
 import message from "@arco-design/web-vue/es/message";
 
 interface Props {
@@ -92,7 +92,7 @@ const handleSubmit = async () => {
     return;
   }
   submitting.value = true;
-  const res = await aiGenerateQuestionUsingPost({
+  const res = await questionAiGenerate({
     appId: props.appId as any,
     ...form,
   });
