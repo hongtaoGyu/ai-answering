@@ -34,12 +34,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotRoleException.class)
     public BaseResponse<?> notRoleExceptionHandler(RuntimeException e) {
         log.error("RuntimeException", e);
-        return ResultUtils.error(ErrorCode.SYSTEM_ERROR, "没有权限");
+        return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "没有权限");
     }
 
     @ExceptionHandler(NotLoginException.class)
     public BaseResponse<?> notLoginExceptionHandler(RuntimeException e) {
         log.error("RuntimeException", e);
-        return ResultUtils.error(ErrorCode.SYSTEM_ERROR, "没有登录");
+        return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR, "没有登录");
     }
 }
