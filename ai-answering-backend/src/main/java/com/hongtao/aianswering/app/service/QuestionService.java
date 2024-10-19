@@ -9,5 +9,13 @@ import com.hongtao.aianswering.app.model.entity.Question;
 * @createDate 2024-07-01 22:42:37
 */
 public interface QuestionService extends BaseService<Question> {
-
+    /**
+     * AI 生成题目
+     *
+     * @param appId
+     * @param questionNumber
+     * @param optionNumber
+     * @return
+     */
+    public String aiGenerateQuestion(Long appId, int questionNumber, int optionNumber);
 }
