@@ -8,5 +8,6 @@ module.exports = defineConfig({
         changeOrigin: true,
       },
     },
+    compress: false,
   },
 });

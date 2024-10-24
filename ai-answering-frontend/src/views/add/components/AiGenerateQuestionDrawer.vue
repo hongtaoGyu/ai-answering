@@ -43,6 +43,13 @@
           >
             {{ submitting ? "生成中" : "一键生成" }}
           </a-button>
+          <a-button
+            :loading="submitting"
+            style="width: 120px"
+            @click="handleSSE"
+          >
+            {{ submitting ? "生成中" : "实时生成" }}
+          </a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -58,6 +65,9 @@ import message from "@arco-design/web-vue/es/message";
 interface Props {
   appId: string;
   onSuccess?: (result: API.QuestionContentDTO[]) => void;
+  onSSESuccess?: (result: API.QuestionContentDTO) => void;
+  onSSEStart?: (event: any) => void;
+  onSSEClose?: (event: any) => void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -108,5 +118,35 @@ const handleSubmit = async () => {
     message.error("操作失败，" + res.data.message);
   }
   submitting.value = false;
+};
+
+const handleSSE = async () => {
+  if (!props.appId) {
+    return;
+  }
+  submitting.value = true;
+
+  const eventSource = new EventSource(
+    `/api/question/ai_generate/sse?appId=${props.appId}&optionNumber=${
+      form.optionNumber
+    }&questionNumber=${form.questionNumber}&_t=${Date.now()}`
+  );
+  eventSource.onmessage = function (ev) {
+    console.log(ev.data);
+    props.onSSESuccess?.(JSON.parse(ev.data));
+  };
+  eventSource.onerror = function (ev) {
+    if (ev.eventPhase === EventSource.CLOSED) {
+      console.log("正常关闭连接");
+      eventSource.close();
+      submitting.value = false;
+      props.onSSEClose?.(ev);
+    }
+  };
+  eventSource.onopen = function (ev) {
+    console.log("建立连接");
+    props.onSSEStart?.(ev);
+    handleCancel();
+  };
 };
 </script>
