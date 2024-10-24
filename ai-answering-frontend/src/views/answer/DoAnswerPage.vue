@@ -123,9 +123,13 @@ const loadData = async () => {
     sortOrder: "descend",
   });
   if (res.data.code === 0 && res.data.data?.records) {
-    questionContent.value = JSON.parse(
-      res.data.data.records[0].questionContent
-    );
+    if (res.data.data.records[0]) {
+      questionContent.value = JSON.parse(
+        res.data.data.records[0].questionContent
+      );
+    } else {
+      message.error("当前应用没有题目");
+    }
   } else {
     message.error("获取题目失败，" + res.data.message);
   }
