@@ -12,6 +12,7 @@ import com.hongtao.base.common.ErrorCode;
 import com.hongtao.base.exception.ThrowUtils;
 import com.hongtao.constant.AiConstant;
 import com.hongtao.manager.AiManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -24,6 +25,7 @@ import java.util.List;
 * @createDate 2024-07-01 22:42:37
 */
 @Service
+@Slf4j
 public class QuestionServiceImpl extends BaseServiceImpl<QuestionMapper, Question> implements QuestionService{
 
     @Resource

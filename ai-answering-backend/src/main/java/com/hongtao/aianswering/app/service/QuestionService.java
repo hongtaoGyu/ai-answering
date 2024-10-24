@@ -2,6 +2,7 @@ package com.hongtao.aianswering.app.service;
 
 import com.hongtao.base.baseFramwork.core.BaseService;
 import com.hongtao.aianswering.app.model.entity.Question;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 /**
 * @author Administrator

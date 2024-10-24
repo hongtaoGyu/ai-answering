@@ -23,6 +23,7 @@ public class MyWebMvcConfig implements WebMvcConfigurer {
                     .notMatch("/**/api-docs")
                     // 排除登录接口
                     .notMatch("/user/login")
+                    .notMatch("/user/register")
                     .check(r -> StpUtil.checkLogin());
         })).addPathPatterns("/**");
     }

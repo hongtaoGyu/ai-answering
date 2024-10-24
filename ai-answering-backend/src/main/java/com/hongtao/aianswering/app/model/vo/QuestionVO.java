@@ -45,4 +45,11 @@ public class QuestionVO extends BaseVO {
             this.questionContent = JSONUtil.toJsonStr(questionContentDTOList);
         }
     }
+
+    public List<QuestionContentDTO> getQuestionContentDTOList() {
+        if (questionContentDTOList == null || questionContentDTOList.isEmpty()) {
+            return JSONUtil.toList(questionContent, QuestionContentDTO.class);
+        }
+        return questionContentDTOList;
+    }
 }
