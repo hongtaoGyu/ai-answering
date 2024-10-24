@@ -22,7 +22,7 @@ import GlobalHeader from "@/components/GlobalHeader.vue";
 
 #basicLayout .header {
   margin-bottom: 16px;
-  box-shadow: #ccc 1px 1px 5px;
+  box-shadow: #eee 1px 1px 5px;
 }
 
 #basicLayout .content {
@@ -38,6 +38,6 @@ import GlobalHeader from "@/components/GlobalHeader.vue";
   padding: 16px;
   text-align: center;
   background: #efefef;
-  box-shadow: #ccc 1px 1px 5px;
+  box-shadow: #fff 1px 1px 5px;
 }
 </style>
